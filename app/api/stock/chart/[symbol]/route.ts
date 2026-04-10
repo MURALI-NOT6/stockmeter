@@ -3,7 +3,7 @@ import yahooFinance from "@/lib/yahoo";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { symbol: string } }
+  { params }: { params: Promise<{ symbol: string }> }
 ) {
   try {
     const { symbol } = await params;
@@ -45,7 +45,8 @@ export async function GET(
       interval,
     });
 
-    if (!chart.timestamp || chart.timestamp.length === 0) {
+    const chartData = chart as any;
+    if (!chartData.timestamp && !chartData.quotes && (!Array.isArray(chartData) || chartData.length === 0)) {
       console.warn(`[Chart] Yahoo returned empty data for ${symbol} (${range})`);
     }
 

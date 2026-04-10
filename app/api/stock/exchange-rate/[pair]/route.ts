@@ -3,7 +3,7 @@ import yahooFinance from "@/lib/yahoo";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { pair: string } }
+  { params }: { params: Promise<{ pair: string }> }
 ) {
   try {
     const { pair } = await params;

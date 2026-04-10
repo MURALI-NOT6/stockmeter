@@ -189,7 +189,7 @@ export const stockSlice = createSlice({
       .addCase(fetchStockQuote.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isFilterLoading = false;
-        state.quote = action.payload as StockQuote;
+        state.quote = action.payload as any as StockQuote;
       })
       .addCase(fetchStockQuote.rejected, (state, action) => {
         state.isLoading = false;
@@ -233,7 +233,7 @@ export const stockSlice = createSlice({
       .addCase(fetchStockSummary.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isFilterLoading = false;
-        state.summary = action.payload as StockSummary;
+        state.summary = action.payload as any as StockSummary;
       })
       .addCase(fetchStockSummary.rejected, (state) => {
         state.isLoading = false;

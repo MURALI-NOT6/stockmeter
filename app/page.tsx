@@ -11,7 +11,6 @@ import { getTicker } from "@/lib/stockMapping";
 import Background from "@/components/Background";
 import Header from "@/components/Header";
 import CompanyOverview from "@/components/CompanyOverview";
-import MobileNav from "@/components/MobileNav";
 
 // ─── Dynamic Imports ──────────────────────────────────────────────────────────
 // Code-split heavy components to improve initial page load.
@@ -151,11 +150,13 @@ export default function Dashboard() {
   // ── Effect 1: Fetch quote & summary when symbol changes ──────────────────
   // Does NOT depend on selectedRange — range filter changes won't re-trigger this.
   useEffect(() => {
-    dispatch(fetchStockQuote(symbol));
-    dispatch(fetchStockSummary(symbol));
+    // Performance: Slightly delay initial fetch to reduce hydration TBT
+    const timer = setTimeout(() => {
+      dispatch(fetchStockQuote(symbol));
+      dispatch(fetchStockSummary(symbol));
+    }, 100);
 
     // Smart Polling: refresh quote every 5s for a "live" feel
-    // WARNING: Aggressive polling (e.g. 1s) may trigger API rate limits. 5s is safer but still very fast.
     const quotePoll = setInterval(() => {
       dispatch(fetchStockQuote(symbol));
     }, 5000);
@@ -166,6 +167,7 @@ export default function Dashboard() {
     }, 300000);
 
     return () => {
+      clearTimeout(timer);
       clearInterval(quotePoll);
       clearInterval(deepSync);
     };
@@ -200,8 +202,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      <MobileNav />
     </main>
   );
 }

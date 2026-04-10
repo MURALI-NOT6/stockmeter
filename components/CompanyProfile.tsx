@@ -13,7 +13,7 @@ export default function CompanyProfile() {
 
   if (!isMounted || !summary || isFilterLoading) {
     return (
-      <div className="bg-surface-container p-8 border border-outline-variant/10 animate-pulse">
+      <div className="bg-surface-container p-8 border border-outline-variant/10 animate-pulse min-h-[440px]">
         {/* Header: icon + title */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-5 h-5 bg-primary-container/10 rounded-sm"></div>

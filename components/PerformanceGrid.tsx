@@ -8,7 +8,7 @@ export default function PerformanceGrid() {
 
   if (!quote || isFilterLoading) {
     return (
-      <div className="bg-surface-container/30 backdrop-blur-md p-6 border border-outline-variant/10 animate-pulse">
+      <div className="bg-surface-container/30 backdrop-blur-md p-6 border border-outline-variant/10 animate-pulse min-h-[170px]">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-primary-container/30"></div>

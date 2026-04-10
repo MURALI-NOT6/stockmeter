@@ -12,7 +12,7 @@ export default function AnalystSentiment() {
 
   if (!isMounted || !summary || isFilterLoading) {
     return (
-      <div className="bg-surface-container/30 backdrop-blur-md p-8 border border-outline-variant/10 flex flex-col animate-pulse">
+      <div className="bg-surface-container/30 backdrop-blur-md p-8 border border-outline-variant/10 flex flex-col animate-pulse min-h-[520px]">
         {/* Header row: title + score */}
         <div className="flex justify-between items-start mb-10">
           <div className="space-y-2">

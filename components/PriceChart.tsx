@@ -17,12 +17,12 @@ export default function PriceChart() {
 
   // Valid Yahoo Finance ranges with user-friendly labels
   const ranges = [
-    { value: "1d",  label: "1D" },
-    { value: "5d",  label: "5D" },
+    { value: "1d", label: "1D" },
+    { value: "5d", label: "5D" },
     { value: "1mo", label: "1M" },
     { value: "3mo", label: "3M" },
     { value: "6mo", label: "6M" },
-    { value: "1y",  label: "1Y" },
+    { value: "1y", label: "1Y" },
   ];
   const symbol = getTicker(company);
 
@@ -131,11 +131,10 @@ export default function PriceChart() {
             <button
               key={r.value}
               onClick={() => dispatch(setRange(r.value))}
-              className={`px-3 py-1 text-[10px] font-label uppercase font-bold transition-all ${
-                selectedRange === r.value
-                  ? "bg-primary-container text-on-primary shadow-[0_0_10px_#00ffff44]"
-                  : "text-on-surface-variant hover:text-on-surface"
-              }`}
+              className={`px-3 py-1 text-[10px] font-label uppercase font-bold transition-all ${selectedRange === r.value
+                ? "bg-primary-container text-on-primary shadow-[0_0_10px_#00ffff44]"
+                : "text-on-surface-variant hover:text-on-surface"
+                }`}
             >
               {r.label}
             </button>
@@ -185,7 +184,7 @@ export default function PriceChart() {
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#chartGradient)"
-                animationDuration={1500}
+                isAnimationActive={true} // Performance: Disable heavy main-thread animations
               />
             </AreaChart>
           </ResponsiveContainer>

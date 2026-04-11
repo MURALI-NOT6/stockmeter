@@ -52,6 +52,21 @@ Originally built on a Redux-heavy thunk architecture, the project has been refac
 2. **SWR Hooks** track "What the API is currently sending" (Data).
 3. This separation prevents UI flickering and ensures common data (like exchange rates) is shared across components without redundant network calls.
 
+## 🤖 AI-Powered Market Intelligence
+StockMeter integrates **Gemini 2.0 Flash** to provide real-time qualitative analysis on top of quantitative data.
+
+- **Automated Sentiment Analysis**: Processes the latest 10 news headlines per asset to determine market mood.
+- **Signal Extraction**: AI identifies specific Bullish and Bearish triggers from reporting periods.
+- **Market Pulse**: Generates a high-density 2-sentence summary of the current narrative surrounding a ticker.
+
+## 🌐 The AI Roadmap (Future Vision)
+The terminal is evolving from a dashboard into an autonomous quantitative partner. Upcoming AI features include:
+
+- **Phase 2: Predictive Volatility (Q3 2024)**: Leveraging long-context LLMs to analyze multi-year annual reports (10-Ks) against current macro trends for earnings-move predictability.
+- **Phase 3: Autonomous Risk Watchdogs (Q4 2024)**: Multi-agent systems that persistently monitor news 24/7 and provide proactive high-priority alerts for "Black Swan" events.
+- **Phase 4: Natural Language Financial Querying (2025)**: A terminal-integrated chat interface for complex cross-asset queries (e.g., *"Which of my followed tech stocks have the highest institutional conviction vs. their current P/E ratio?"*).
+
+
 ## 📥 Setup and Installation
 
 1. **Clone and Install**:

@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
     quote:        (symbol: string) => `/api/stock/quote/${symbol}`,
     chart:        (symbol: string) => `/api/stock/chart/${symbol}`,
     summary:      (symbol: string) => `/api/stock/summary/${symbol}`,
+    insights:     (symbol: string) => `/api/stock/insights/${symbol}`,
     exchangeRate: (ticker: string) => `/api/stock/exchange-rate/${ticker}`,
   },
 } as const;

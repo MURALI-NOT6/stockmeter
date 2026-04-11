@@ -136,6 +136,19 @@ const FinancialStats = dynamic(() => import("@/components/FinancialStats"), {
   ),
 });
 
+const StockInsights = dynamic(() => import("@/components/StockInsights"), {
+  loading: () => (
+    <div className="bg-surface-container/30 backdrop-blur-md p-8 border border-outline-variant/10 animate-pulse min-h-[400px]">
+      <div className="h-6 w-48 bg-primary-container/10 mb-6"></div>
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-4 bg-on-surface-variant/5"></div>
+        ))}
+      </div>
+    </div>
+  ),
+});
+
 const StockHolders = dynamic(() => import("@/components/StockHolders"), {
   ssr: false,
   loading: () => (
@@ -169,6 +182,7 @@ export default function Dashboard() {
           {/* Main Analytical Block — 3 columns */}
           <div className="lg:col-span-3 flex flex-col gap-6">
             <PriceChart />
+            <StockInsights />
             <CompanyProfile />
             <StockHolders />
           </div>

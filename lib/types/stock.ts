@@ -39,3 +39,21 @@ export interface StockSummary {
   majorHoldersBreakdown?: any;
   institutionOwnership?: any;
 }
+
+export interface StockNewsItem {
+  title: string;
+  publisher: string;
+  link: string;
+  providerPublishTime: number;
+}
+
+export interface StockInsights {
+  summary: string;
+  sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+  signals: {
+    bullish: string[];
+    bearish: string[];
+  };
+  news: StockNewsItem[];
+  error?: string;
+}

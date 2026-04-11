@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { TrendingUp, BarChart, Activity, Zap, ShieldCheck } from "lucide-react";
 import { formatCurrency } from "@/lib/currencyUtils";
+import { useStockQuote } from "@/hooks/useStockQuote";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { getTicker } from "@/lib/stockMapping";
 
 export default function FinancialStats() {
-  const [isMounted, setIsMounted] = useState(false);
-  const { quote, isLoading, isRateLoading, isFilterLoading, exchangeRate, currencySymbol } = useAppSelector((state) => state.stock);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const { company, currency } = useAppSelector((state) => state.filters);
+  const symbol = getTicker(company);
+  
+  const { quote, isLoading: isQuoteLoading } = useStockQuote(symbol);
+  const { exchangeRate, currencySymbol, isLoading: isRateLoading } = useExchangeRate(currency);
 
 
   const stats = [
@@ -57,7 +58,7 @@ export default function FinancialStats() {
     },
   ];
 
-  const isDataLoading = !isMounted || !quote || isFilterLoading;
+  const isDataLoading = isQuoteLoading || !quote;
 
   return (
     <div className="bg-surface-container/30 backdrop-blur-md p-6 border border-outline-variant/10 glow-primary shadow-terminal group">

@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { Zap } from "lucide-react";
+import { useStockSummary } from "@/hooks/useStockSummary";
+import { getTicker } from "@/lib/stockMapping";
 
 export default function AnalystSentiment() {
-  const [isMounted, setIsMounted] = useState(false);
-  const { summary, isFilterLoading } = useAppSelector((state) => state.stock);
+  const { company } = useAppSelector((state) => state.filters);
+  const symbol = getTicker(company);
+  const { summary, isLoading } = useStockSummary(symbol);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted || !summary || isFilterLoading) {
+  if (isLoading || !summary) {
     return (
       <div className="bg-surface-container/30 backdrop-blur-md p-8 border border-outline-variant/10 flex flex-col animate-pulse min-h-[520px]">
         {/* Header row: title + score */}

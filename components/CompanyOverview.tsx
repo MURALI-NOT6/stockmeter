@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { formatCurrency } from "@/lib/currencyUtils";
+import { formatCurrency, formatPercentage } from "@/lib/currencyUtils";
+import { useStockQuote } from "@/hooks/useStockQuote";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { getTicker } from "@/lib/stockMapping";
 
 export default function CompanyOverview() {
-  const [isMounted, setIsMounted] = useState(false);
-  const { quote, isLoading, isRateLoading, isFilterLoading, exchangeRate, currencySymbol } = useAppSelector((state) => state.stock);
+  const { company, currency } = useAppSelector((state) => state.filters);
+  const symbol = getTicker(company);
+  
+  const { quote, isLoading: isQuoteLoading } = useStockQuote(symbol);
+  const { exchangeRate, currencySymbol, isLoading: isRateLoading } = useExchangeRate(currency);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isLoading = isQuoteLoading || isRateLoading;
 
-  if (!isMounted || !quote || isFilterLoading) {
+  if (isLoading || !quote) {
     return (
       <div className="bg-surface-container/30 backdrop-blur-md px-6 py-5 border border-outline-variant/10 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-pulse">
         {/* Left: icon + name block */}
@@ -80,7 +83,7 @@ export default function CompanyOverview() {
           }`}>
             {isPositive ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
             <span>
-              {isPositive ? "+" : ""}{formatCurrency(quote?.regularMarketChange, exchangeRate, currencySymbol)} ({quote?.regularMarketChangePercent?.toFixed(2)}%)
+              {isPositive ? "+" : ""}{formatCurrency(quote?.regularMarketChange, exchangeRate, currencySymbol)} ({formatPercentage(quote?.regularMarketChangePercent)})
             </span>
             <span className="text-on-surface-variant font-normal text-[10px] ml-1">Today</span>
           </div>

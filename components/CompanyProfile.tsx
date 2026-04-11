@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { Users, Info, Building2, User } from "lucide-react";
+import { useStockSummary } from "@/hooks/useStockSummary";
+import { getTicker } from "@/lib/stockMapping";
 
 export default function CompanyProfile() {
-  const [isMounted, setIsMounted] = useState(false);
-  const { summary, isFilterLoading } = useAppSelector((state) => state.stock);
+  const { company } = useAppSelector((state) => state.filters);
+  const symbol = getTicker(company);
+  const { summary, isLoading } = useStockSummary(symbol);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted || !summary || isFilterLoading) {
+  if (isLoading || !summary) {
     return (
       <div className="bg-surface-container p-8 border border-outline-variant/10 animate-pulse min-h-[440px]">
         {/* Header: icon + title */}

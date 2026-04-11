@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface FilterState {
   currency: string;
   company: string;
+  sector: string;
 }
 
 const initialState: FilterState = {
   currency: "USD ($)",
   company: "Apple",
+  sector: "All Sectors",
 };
 
 export const filterSlice = createSlice({
@@ -20,8 +22,11 @@ export const filterSlice = createSlice({
     setCompany: (state, action: PayloadAction<string>) => {
       state.company = action.payload;
     },
+    setSector: (state, action: PayloadAction<string>) => {
+      state.sector = action.payload;
+    },
   },
 });
 
-export const { setCurrency, setCompany } = filterSlice.actions;
+export const { setCurrency, setCompany, setSector } = filterSlice.actions;
 export default filterSlice.reducer;

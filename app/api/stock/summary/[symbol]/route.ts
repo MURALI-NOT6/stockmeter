@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { symbol } = await params;
     const summary = await yahooFinance.quoteSummary(symbol, {
-      modules: ["financialData", "defaultKeyStatistics", "assetProfile", "recommendationTrend"],
+      modules: ["financialData", "defaultKeyStatistics", "assetProfile", "recommendationTrend", "majorHoldersBreakdown", "institutionOwnership"],
     });
     
     return NextResponse.json(summary);

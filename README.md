@@ -1,53 +1,56 @@
 # 💹 StockMeter V1.0: Tactical Quantitative Terminal
 
-A high-performance, real-time stock analytics dashboard built for professional-grade market monitoring. Designed with a sleek, low-latency interface that mimics institutional quantitative terminals.
+A high-performance, real-time stock analytics dashboard built for professional-grade market monitoring. Designed with a sleek, low-latency interface that mimics institutional quantitative terminals like Bloomberg or FactSet.
 
 ![Dashboard Preview](./public/screenshots/dashboard.png)
 
+## 🎯 Use Case
+StockMeter is designed for **active traders and quantitative analysts** who require a unified view of market performance, corporate structure, and institutional sentiment. It serves as a "Mission Control" for monitoring high-conviction assets with live-synced intelligence.
+
 ## 🚀 Core Features
 
-- **Real-Time Market Sync**: Live quote updates every 5 seconds without UI flickering.
-- **Dynamic Currency Engine**: On-the-fly conversion of all financial metrics between USD, INR, EUR, and GBP.
-- **Institutional Conviction Meter**: Visualized analyst recommendation trends and signal strength scores.
-- **Tactical Price Charts**: Interactive historical trends with multiple time ranges (1D to 1Y) and volume tracking.
-- **Corporate Intelligence**: Comprehensive asset profiles including sector analysis and executive leadership info.
-- **Transition Skeletons**: Intelligent filter-sync logic that provides instant visual feedback during asset or currency switching.
+- **SWR-Powered Data Layer**: Migrated from Redux thunks to a high-performance hook-based architecture with automatic revalidation, deduplication, and caching.
+- **Real-Time Market Sync**: Live quote updates every 5 seconds via background polling.
+- **Holder Intelligence Engine**: Comprehensive breakdown of **Institutional vs. Insider ownership**, including top 5 institutional positions and market float analysis.
+- **Sector-Specific Filtering**: New multi-layer filtering system (Sector -> Asset) to navigate 30+ global stocks across Finance, Tech, Energy, and more.
+- **Dynamic Currency Engine**: On-the-fly conversion between USD, INR, EUR, and GBP with localized formatting.
+- **Institutional Conviction Meter**: Visualized analyst recommendation trends (Buy/Sell/Hold) with signal strength scoring.
+- **Balanced Tactical Layout**: Re-engineered dual-column layout ensuring main analytics and tactical metrics end at a unified baseline.
 
 ## 🛠 Tech Stack & Dependencies
 
 | Category | Package | Use Case |
 | :--- | :--- | :--- |
 | **Framework** | `next` (v16) | React framework for SSR, optimized routing, and API handling. |
-| **State Management** | `@reduxjs/toolkit` | Manages global stock data, currency rates, and user filters. |
-| **Data Fetching** | `yahoo-finance2` | The primary engine for retrieving real-time market data and historical charts. |
+| **Data Orchestration** | `swr` | **NEW**: Handles all data fetching, caching, and background polling logic. |
+| **Global UI State** | `@reduxjs/toolkit` | Manages user preferences (Selected Asset, Sector, Currency, Date Range). |
+| **Market Data** | `yahoo-finance2` | Backend engine for real-time quotes, summaries, and historical charts. |
 | **Visualization** | `recharts` | Used for drawing high-fidelity price gradients and performance lines. |
-| **Iconography** | `lucide-react` | Provides sharp, semantic terminal-themed icons. |
-| **Utilities** | `date-fns` | Handles precise timestamp formatting for financial charts. |
-| **Performance** | `axios` | Robust HTTP client for internal API communication. |
-| **Validation** | `zod` | Ensures type safety and strict schema validation for external data. |
+| **Iconography** | `lucide-react` | Sharp, semantic terminal-themed icons. |
+| **Styling** | `tailwind-css` | Atomic utility-first styling for the terminal aesthetic. |
 
-## 🛡 Security Architecture
+## 🔗 Custom Hook Layer (Frontend)
+The application uses a centralized hook system located in `hooks/` to manage all external data:
 
-We have implemented several layers of protection to ensure the terminal is production-ready:
+- `useStockQuote(symbol)`: Fetches live price data with a **5-second polling interval**.
+- `useStockChart(symbol, range)`: Manages historical time-series data; re-fetches instantly when range changes.
+- `useStockSummary(symbol)`: Retrieves heavy company profile and ownership data with a **5-minute cache**.
+- `useExchangeRate(currency)`: Synchronizes the global currency multiplier (1-hour cache).
 
-1. **Strict Headers**: Configured `next.config.ts` with:
-   - `X-Frame-Options: DENY`: Blocks Clickjacking.
-   - `X-Content-Type-Options: nosniff`: prevents MIME-type sniffing.
-   - `X-XSS-Protection: 1; mode=block`: Basic injection mitigation.
-   - `Referrer-Policy: strict-origin-when-cross-origin`: Minimizes data leakage.
-2. **Rate-Limit Mitigation**: Background polling is strictly regulated (5s interval) to prevent IP blocking from third-party data providers.
-3. **Optimized Package Imports**: Experimental `optimizePackageImports` is enabled for `lucide-react` and `recharts` to minimize the JS bundle size and reduce the attack surface.
+## 📡 API Reference (Backend)
 
-## 🧠 Knowledge Transfer (KT) - Core Functions
+| Endpoint | Return Data | Ownership Info |
+| :--- | :--- | :--- |
+| `/api/stock/quote/[symbol]` | Current price, day range, volume, 52W high/low. | N/A |
+| `/api/stock/chart/[symbol]` | Time-series array (Date, Price, Open, High, Low, Volume). | N/A |
+| `/api/stock/summary/[symbol]` | Asset profile, Financial data, Analyst trends. | **Yes**: Incl. `majorHoldersBreakdown` & `institutionOwnership`. |
+| `/api/stock/exchange-rate/[ccy]`| Latest conversion rate vs USD. | N/A |
 
-### 1. Filter Sync Logic (`isFilterLoading`)
-Located in `stockSlice.ts`, this flag distinguishes between **background polling** (silent update) and **manual filter changes** (Asset/Currency). When a user changes a filter, this flag triggers the full-section skeleton loaders, ensuring the user isn't looking at stale converted data while the new rates arrive.
-
-### 2. Live Polling Mechanism
-Managed in `app/page.tsx` via `useEffect`. It initializes a `setInterval` for quote fetching every 5s. The reducer logic in `stockSlice.ts` intelligently decides *not* to clear existing data during these polls to maintain a smooth, "no-flash" UI experience.
-
-### 3. Currency Conversion Engine
-We use a centralized `exchangeRate` in Redux. Most components do not store hardcoded values; they use the `formatCurrency` utility and the live `exchangeRate` from the state to compute display values in real-time.
+## 🧠 Architecture Evolution
+Originally built on a Redux-heavy thunk architecture, the project has been refactored to prioritize UI stability:
+1. **Redux** now only tracks "What the user wants to see" (Intent).
+2. **SWR Hooks** track "What the API is currently sending" (Data).
+3. This separation prevents UI flickering and ensures common data (like exchange rates) is shared across components without redundant network calls.
 
 ## 📥 Setup and Installation
 
@@ -62,10 +65,4 @@ npm install
 3. **Development Mode**:
 ```bash
 npm run dev
-```
-
-4. **Production Build**:
-```bash
-npm run build
-npm run start
 ```

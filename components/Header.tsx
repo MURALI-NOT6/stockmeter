@@ -1,16 +1,16 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { setCurrency, setCompany } from "@/lib/redux/slices/filterSlice";
-import { fetchExchangeRate } from "@/lib/redux/slices/stockSlice";
+import { setCurrency, setCompany, setSector } from "@/lib/redux/slices/filterSlice";
 import Dropdown from "./Dropdown";
+import { SECTORS, getCompaniesBySector } from "@/lib/stockMapping";
 
 export default function Header() {
   const dispatch = useAppDispatch();
-  const { currency, company } = useAppSelector((state) => state.filters);
+  const { currency, company, sector } = useAppSelector((state) => state.filters);
 
   const currencies = ["USD ($)", "INR (₹)", "EUR (€)", "GBP (£)"];
-  const companies = ["Apple", "Tesla", "NVIDIA", "Microsoft", "Amazon", "Google"];
+  const companies = getCompaniesBySector(sector);
 
   return (
     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8">
@@ -26,14 +26,28 @@ export default function Header() {
         <Dropdown
           options={currencies}
           value={currency}
+          width="120px"
           onChange={(v) => {
             dispatch(setCurrency(v));
-            dispatch(fetchExchangeRate(v));
           }}
+        />
+        <Dropdown
+          options={SECTORS}
+          value={sector}
+          width="260px"
+          onChange={(v) => {
+            dispatch(setSector(v));
+            const filtered = getCompaniesBySector(v);
+            if (filtered.length > 0 && !filtered.includes(company)) {
+              dispatch(setCompany(filtered[0]));
+            }
+          }}
+          prefix="Sector"
         />
         <Dropdown
           options={companies}
           value={company}
+          width="220px"
           onChange={(v) => dispatch(setCompany(v))}
           prefix="Asset"
         />

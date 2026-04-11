@@ -1,19 +1,25 @@
-"use client";
-
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { setRange, fetchStockChart } from "@/lib/redux/slices/stockSlice";
+import { setRange } from "@/lib/redux/slices/stockSlice";
 import { getTicker } from "@/lib/stockMapping";
 import { useEffect, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { format } from "date-fns";
 import { useMemo } from "react";
 import { formatCurrency } from "@/lib/currencyUtils";
+import { useStockChart } from "@/hooks/useStockChart";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { useStockQuote } from "@/hooks/useStockQuote";
 
 export default function PriceChart() {
   const dispatch = useAppDispatch();
   const [isMounted, setIsMounted] = useState(false);
-  const { company } = useAppSelector((state) => state.filters);
-  const { chartData, selectedRange, isChartLoading, isRateLoading, exchangeRate, currencySymbol } = useAppSelector((state) => state.stock);
+  const { company, currency } = useAppSelector((state) => state.filters);
+  const { selectedRange } = useAppSelector((state) => state.stock);
+  const symbol = getTicker(company);
+
+  const { chartData, isLoading: isChartLoading } = useStockChart({ symbol, range: selectedRange });
+  const { exchangeRate, currencySymbol, isLoading: isRateLoading } = useExchangeRate(currency);
+  const { isRefreshing: isQuoteRefreshing } = useStockQuote(symbol);
 
   // Valid Yahoo Finance ranges with user-friendly labels
   const ranges = [
@@ -24,7 +30,6 @@ export default function PriceChart() {
     { value: "6mo", label: "6M" },
     { value: "1y", label: "1Y" },
   ];
-  const symbol = getTicker(company);
 
   const convertedChartData = useMemo(() => {
     return chartData.map(point => ({
@@ -35,8 +40,7 @@ export default function PriceChart() {
 
   useEffect(() => {
     setIsMounted(true);
-    dispatch(fetchStockChart({ symbol, range: selectedRange }));
-  }, [dispatch, symbol, selectedRange]);
+  }, []);
 
   // Format tooltip date based on range granularity
   const isIntraday = selectedRange === "1d" || selectedRange === "5d";
@@ -93,25 +97,8 @@ export default function PriceChart() {
     return null;
   };
 
-  if (!isMounted || isChartLoading) {
-    return (
-      <div className="bg-surface-container/30 backdrop-blur-md p-6 sm:p-8 border border-outline-variant/10 min-h-[420px] animate-pulse">
-        <div className="flex justify-between mb-8">
-          <div className="space-y-3">
-            <div className="h-6 w-48 bg-primary-container/10"></div>
-            <div className="h-3 w-64 bg-on-surface-variant/10"></div>
-          </div>
-          <div className="h-8 w-32 bg-background border border-outline-variant/20"></div>
-        </div>
-        <div className="h-[280px] w-full bg-primary-container/5 relative overflow-hidden">
-          <div className="absolute inset-0 flex flex-col justify-between p-4">
-            <div className="h-[1px] w-full bg-on-surface-variant/10"></div>
-            <div className="h-[1px] w-full bg-on-surface-variant/10"></div>
-            <div className="h-[1px] w-full bg-on-surface-variant/10"></div>
-          </div>
-        </div>
-      </div>
-    );
+  if (!isMounted) {
+    return <div className="min-h-[420px] bg-surface-container/30 animate-pulse border border-outline-variant/10" />;
   }
 
   return (

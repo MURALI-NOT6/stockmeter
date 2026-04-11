@@ -1,10 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { fetchStockQuote, fetchStockChart, fetchStockSummary } from "@/lib/redux/slices/stockSlice";
-import { getTicker } from "@/lib/stockMapping";
 
 // ─── Static Imports ───────────────────────────────────────────────────────────
 // Load immediately — these are small and above the fold
@@ -140,44 +136,26 @@ const FinancialStats = dynamic(() => import("@/components/FinancialStats"), {
   ),
 });
 
+const StockHolders = dynamic(() => import("@/components/StockHolders"), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-surface-container/30 backdrop-blur-md p-6 border border-outline-variant/10 animate-pulse min-h-[400px]">
+      <div className="h-4 w-40 bg-primary-container/10 mb-6"></div>
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="h-20 bg-background/40"></div>
+        <div className="h-20 bg-background/40"></div>
+      </div>
+      <div className="space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-8 bg-on-surface-variant/5"></div>
+        ))}
+      </div>
+    </div>
+  ),
+});
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const dispatch = useAppDispatch();
-  const { company } = useAppSelector((state) => state.filters);
-  const { selectedRange } = useAppSelector((state) => state.stock);
-  const symbol = getTicker(company);
-
-  // ── Effect 1: Fetch quote & summary when symbol changes ──────────────────
-  // Does NOT depend on selectedRange — range filter changes won't re-trigger this.
-  useEffect(() => {
-    // Performance: Slightly delay initial fetch to reduce hydration TBT
-    const timer = setTimeout(() => {
-      dispatch(fetchStockQuote(symbol));
-      dispatch(fetchStockSummary(symbol));
-    }, 100);
-
-    // Smart Polling: refresh quote every 5s for a "live" feel
-    const quotePoll = setInterval(() => {
-      dispatch(fetchStockQuote(symbol));
-    }, 5000);
-
-    // Deep Sync: refresh summary every 5 minutes
-    const deepSync = setInterval(() => {
-      dispatch(fetchStockSummary(symbol));
-    }, 300000);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(quotePoll);
-      clearInterval(deepSync);
-    };
-  }, [dispatch, symbol]);
-
-  // ── Effect 2: Fetch chart when symbol OR range filter changes ─────────────
-  // Only the chart re-fetches + shows chart skeleton. Other panels untouched.
-  useEffect(() => {
-    dispatch(fetchStockChart({ symbol, range: selectedRange }));
-  }, [dispatch, symbol, selectedRange]);
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-primary-container/30">
@@ -191,14 +169,15 @@ export default function Dashboard() {
           {/* Main Analytical Block — 3 columns */}
           <div className="lg:col-span-3 flex flex-col gap-6">
             <PriceChart />
-            <PerformanceGrid />
             <CompanyProfile />
+            <StockHolders />
           </div>
 
           {/* Tactical Intel Panel — 1 column, stacks below on mobile */}
           <div className="lg:col-span-1 flex flex-col gap-6">
             <AnalystSentiment />
             <FinancialStats />
+            <PerformanceGrid />
           </div>
         </div>
       </div>

@@ -1,13 +1,29 @@
 import { useAppSelector } from "@/lib/redux/hooks";
 import { TrendingUp, TrendingDown, Clock } from "lucide-react";
-import { formatPercentage } from "@/lib/currencyUtils";
+import { formatPercentage } from "@/lib/formatters";
 import { useStockQuote } from "@/hooks/useStockQuote";
 import { getTicker } from "@/lib/stockMapping";
 
 export default function PerformanceGrid() {
   const { company } = useAppSelector((state) => state.filters);
   const symbol = getTicker(company);
-  const { quote, isLoading } = useStockQuote(symbol);
+  const { quote, isLoading, error } = useStockQuote(symbol);
+
+  if (error) {
+    return (
+      <div className="bg-surface-container/30 backdrop-blur-md p-6 border border-error/20 min-h-[170px] flex flex-col items-center justify-center gap-2 text-center group">
+        <div className="text-error opacity-60 group-hover:opacity-100 transition-opacity">
+          <Clock size={24} strokeWidth={1.5} />
+        </div>
+        <p className="text-[10px] font-headline font-black text-error italic uppercase tracking-tighter">
+          Market Data Sync Failure
+        </p>
+        <p className="text-[8px] font-label text-on-surface-variant uppercase opacity-40">
+          Target server timeout or rate limit in effect.
+        </p>
+      </div>
+    );
+  }
 
   if (!quote || isLoading) {
     return (

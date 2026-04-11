@@ -52,7 +52,15 @@ export async function GET(
 
     return NextResponse.json(chart);
   } catch (error: any) {
-    console.error("[Chart API Error]", error.message);
+    console.error("Yahoo Finance Chart Error:", error);
+    
+    if (error.code === "UND_ERR_CONNECT_TIMEOUT" || error.message?.includes("timeout")) {
+      return NextResponse.json(
+        { error: "Target data source timed out. The service may be temporarily overloaded." },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: error.message || "Failed to fetch chart" },
       { status: 500 }

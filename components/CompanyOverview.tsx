@@ -1,6 +1,7 @@
 import { useAppSelector } from "@/lib/redux/hooks";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { formatCurrency, formatPercentage } from "@/lib/currencyUtils";
+import { formatCurrency } from "@/lib/currencyUtils";
+import { formatPercentage } from "@/lib/formatters";
 import { useStockQuote } from "@/hooks/useStockQuote";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { getTicker } from "@/lib/stockMapping";
@@ -9,8 +10,28 @@ export default function CompanyOverview() {
   const { company, currency } = useAppSelector((state) => state.filters);
   const symbol = getTicker(company);
   
-  const { quote, isLoading: isQuoteLoading } = useStockQuote(symbol);
+  const { quote, isLoading: isQuoteLoading, error } = useStockQuote(symbol);
   const { exchangeRate, currencySymbol, isLoading: isRateLoading } = useExchangeRate(currency);
+
+  if (error) {
+    return (
+      <div className="bg-surface-container/30 backdrop-blur-md px-6 py-5 border border-error/10 mb-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-error/10 flex items-center justify-center border border-error/20 shrink-0">
+             <span className="text-error opacity-60">!</span>
+          </div>
+          <div>
+            <h2 className="font-headline text-lg font-black tracking-tight uppercase text-error opacity-60">
+              Data Sync Interrupted
+            </h2>
+            <p className="text-[10px] text-on-surface-variant mt-0.5 uppercase tracking-widest">
+               Target server timeout or rate limit in effect
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const isLoading = isQuoteLoading || isRateLoading;
 

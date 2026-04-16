@@ -4,12 +4,16 @@ interface FilterState {
   currency: string;
   company: string;
   sector: string;
+  view: "market" | "detailed";
+  sortOrder: "high-to-low" | "low-to-high";
 }
 
 const initialState: FilterState = {
   currency: "USD ($)",
   company: "Apple",
   sector: "All Sectors",
+  view: "market",
+  sortOrder: "high-to-low",
 };
 
 export const filterSlice = createSlice({
@@ -25,8 +29,14 @@ export const filterSlice = createSlice({
     setSector: (state, action: PayloadAction<string>) => {
       state.sector = action.payload;
     },
+    setView: (state, action: PayloadAction<"market" | "detailed">) => {
+      state.view = action.payload;
+    },
+    setSortOrder: (state, action: PayloadAction<"high-to-low" | "low-to-high">) => {
+      state.sortOrder = action.payload;
+    },
   },
 });
 
-export const { setCurrency, setCompany, setSector } = filterSlice.actions;
+export const { setCurrency, setCompany, setSector, setView, setSortOrder } = filterSlice.actions;
 export default filterSlice.reducer;

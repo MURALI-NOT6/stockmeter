@@ -21,3 +21,17 @@ export function formatPercentage(value: number | undefined | null): string {
   // Standard 2-decimal format
   return value.toFixed(2) + "%";
 }
+
+/**
+ * Standard currency formatter
+ */
+export function formatPrice(value: number | undefined | null, currency: string = "USD"): string {
+  if (value === undefined || value === null) return "---";
+  
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}

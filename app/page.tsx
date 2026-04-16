@@ -7,6 +7,9 @@ import dynamic from "next/dynamic";
 import Background from "@/components/Background";
 import Header from "@/components/Header";
 import CompanyOverview from "@/components/CompanyOverview";
+import MarketDashboard from "@/components/MarketDashboard";
+import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
+import { setView } from "@/lib/redux/slices/filterSlice";
 
 // ─── Dynamic Imports ──────────────────────────────────────────────────────────
 // Code-split heavy components to improve initial page load.
@@ -169,6 +172,13 @@ const StockHolders = dynamic(() => import("@/components/StockHolders"), {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const { view } = useAppSelector((state) => state.filters);
+  const dispatch = useAppDispatch();
+
+  const handleViewMore = () => {
+    dispatch(setView("detailed"));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-primary-container/30">
@@ -176,24 +186,33 @@ export default function Dashboard() {
 
       <div className="w-full px-4 sm:px-6 lg:px-10 py-8 relative z-10">
         <Header />
-        <CompanyOverview />
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          {/* Main Analytical Block — 3 columns */}
-          <div className="lg:col-span-3 flex flex-col gap-6">
-            <PriceChart />
-            <StockInsights />
-            <CompanyProfile />
-            <StockHolders />
+        
+        {view === "market" ? (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <MarketDashboard onViewMore={handleViewMore} />
           </div>
+        ) : (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <CompanyOverview />
 
-          {/* Tactical Intel Panel — 1 column, stacks below on mobile */}
-          <div className="lg:col-span-1 flex flex-col gap-6">
-            <AnalystSentiment />
-            <FinancialStats />
-            <PerformanceGrid />
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+              {/* Main Analytical Block — 3 columns */}
+              <div className="lg:col-span-3 flex flex-col gap-6">
+                <PriceChart />
+                <StockInsights />
+                <CompanyProfile />
+                <StockHolders />
+              </div>
+
+              {/* Tactical Intel Panel — 1 column, stacks below on mobile */}
+              <div className="lg:col-span-1 flex flex-col gap-6">
+                <AnalystSentiment />
+                <FinancialStats />
+                <PerformanceGrid />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );

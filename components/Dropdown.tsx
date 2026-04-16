@@ -9,9 +9,17 @@ interface DropdownProps {
   onChange: (value: string) => void;
   prefix?: string;
   width?: string;
+  disabled?: boolean;
 }
 
-export default function Dropdown({ options, value, onChange, prefix, width = "120px" }: DropdownProps) {
+export default function Dropdown({ 
+  options, 
+  value, 
+  onChange, 
+  prefix, 
+  width = "120px",
+  disabled = false 
+}: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -45,21 +53,28 @@ export default function Dropdown({ options, value, onChange, prefix, width = "12
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         style={{ width }}
-        className="bg-surface-container border border-outline-variant/30 text-[10px] font-label uppercase text-on-surface px-4 h-[34px] flex items-center gap-2 cursor-pointer hover:bg-surface-container-high transition-colors justify-between overflow-hidden relative z-10"
+        disabled={disabled}
+        className={`bg-surface-container border border-outline-variant/30 text-[10px] font-label uppercase text-on-surface px-4 h-[34px] flex items-center gap-2 transition-colors justify-between overflow-hidden relative z-10 ${
+          disabled 
+            ? "opacity-40 cursor-not-allowed" 
+            : "cursor-pointer hover:bg-surface-container-high"
+        }`}
       >
         <span className="flex items-center truncate">
           {prefix && <span className="text-on-surface-variant mr-1 shrink-0">{prefix}:</span>}
           <span className="truncate">{value}</span>
         </span>
-        <ChevronDown
-          size={14}
-          strokeWidth={3}
-          className={`text-on-surface-variant transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
+        {!disabled && (
+          <ChevronDown
+            size={14}
+            strokeWidth={3}
+            className={`text-on-surface-variant transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        )}
       </button>
 
       {isOpen && (

@@ -43,7 +43,7 @@ export default function Header() {
           
           <button
             onClick={() => dispatch(setView("market"))}
-            className={`flex-1 flex items-center justify-center gap-2.5 z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
+            className={`flex-1 flex items-center justify-center gap-2.5 z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer ${
               view === "market" ? "text-primary-container" : "text-on-surface-variant/50 hover:text-on-surface-variant hover:bg-white/5"
             }`}
           >
@@ -53,7 +53,7 @@ export default function Header() {
           
           <button
             onClick={() => dispatch(setView("detailed"))}
-            className={`flex-1 flex items-center justify-center gap-2.5 z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
+            className={`flex-1 flex items-center justify-center gap-2.5 z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer ${
               view === "detailed" ? "text-primary-container" : "text-on-surface-variant/50 hover:text-on-surface-variant hover:bg-white/5"
             }`}
           >
